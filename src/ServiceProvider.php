@@ -34,5 +34,7 @@ class ServiceProvider extends AddonServiceProvider
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule) {
             $schedule->command('statamic-locks:clear-locks')->everyMinute();
         });
+
+        Models\LockModel::observe(Observers\LockObserver::class);
     }
 }
