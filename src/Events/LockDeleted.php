@@ -16,12 +16,12 @@ class LockDeleted extends Event implements ShouldBroadcast
 
     public function __construct($lock)
     {
-        $this->lock = $lock;
+        $this->lock = $lock->toArray(); // we cant unserialize the model once its deleted
     }
 
     public function broadcastOn()
     {
-        return new PrivateChannel('statamic-locks.'.$this->lock->id);
+        return new PrivateChannel('statamic-locks.'.$this->lock['id']);
     }
 
     public function broadcastAs()

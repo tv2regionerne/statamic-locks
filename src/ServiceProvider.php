@@ -9,9 +9,9 @@ use Statamic\Providers\AddonServiceProvider;
 class ServiceProvider extends AddonServiceProvider
 {
     protected $listen = [
-        Events\AssetSaving::class => [LockListener::class],
-        Events\EntrySaving::class => [LockListener::class],
-        Events\TermSaving::class => [LockListener::class],
+        Events\AssetSaving::class => [Listeners\LockListener::class],
+        Events\EntrySaving::class => [Listeners\LockListener::class],
+        Events\TermSaving::class => [Listeners\LockListener::class],
     ];
 
     protected $routes = [
