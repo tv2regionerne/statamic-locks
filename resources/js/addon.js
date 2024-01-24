@@ -1,3 +1,5 @@
+import LocksListing from './components/locks/Listing.vue'
+
 Statamic.booting(() => {
-    // something
+    Statamic.component('statamic-locks-listing', LocksListing);
 })

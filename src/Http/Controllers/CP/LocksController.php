@@ -3,15 +3,51 @@
 namespace Tv2regionerne\StatamicLocks\Http\Controllers\CP;
 
 use Illuminate\Http\Request;
+use Statamic\CP\Column;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
 use Tv2regionerne\StatamicLocks\Models\LockModel;
 
 class LocksController extends CpController
 {
-    public function index($liveblog)
+    public function index(Request $request)
     {
-        // tbc
+        $this->authorize('view locks');
+
+        $columns = [
+            Column::make('item_id')->label(__('ID')),
+            Column::make('item_type')->label(__('Type')),
+            Column::make('user')->label(__('User')),
+            Column::make('updated_at')->label(__('Last Updated')),
+        ];
+
+        $locks = LockModel::all()
+            ->map(function ($lock) {
+                return [
+                    'id' => $lock->getKey(),
+                    'item_id' => $lock->item_id,
+                    'item_type' => $lock->item_type,
+                    'user' => $lock->user()->name(),
+                    'updated_at' => $lock->updated_at->format('Y-m-d H:i:s'),
+                    'delete_url' => cp_route('statamic-locks.locks.destroy', [$lock->getKey()])
+                ];
+            })
+            ->values();
+
+        if ($request->wantsJson()) {
+            return [
+                'meta' => [
+                    'columns' => $columns,
+                    'activeFilterBadges' => [],
+                ],
+                'data' => $locks,
+            ];
+        }
+
+        return view('statamic-locks::locks.index', [
+            'locks' => $locks,
+            'initialColumns' => $columns,
+        ]);
     }
 
     public function create(Request $request)
@@ -20,7 +56,7 @@ class LocksController extends CpController
         $itemType = $request->input('item_type');
         $user = User::current();
 
-        if ($lock = LockModel::where(['item_id' => $itemId, 'item_type', => $itemType])->first()) {
+        if ($lock = LockModel::where(['item_id' => $itemId, 'item_type' => $itemType])->first()) {
             if ($lock->user()->id() != $user->id()) {
                 return [
                     'error' => true,
@@ -50,10 +86,8 @@ class LocksController extends CpController
 
     public function destroy($id)
     {
-        $lock = LockModel::find($post);
+        $this->authorize('view locks');
 
-        $this->authorize('delete', $lock, 'You are not authorized to delete this lock.');
-
-        $lock->delete();
+        LockModel::find($id)?->delete();
     }
 }

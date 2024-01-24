@@ -5,3 +5,4 @@ mix-manifest.json
 composer.lock
 hot
 .DS_Store
+package-lock.json

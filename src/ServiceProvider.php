@@ -4,6 +4,8 @@ namespace Tv2regionerne\StatamicLocks;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Statamic\Events;
+use Statamic\Facades\CP\Nav;
+use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
 
 class ServiceProvider extends AddonServiceProvider
@@ -31,10 +33,52 @@ class ServiceProvider extends AddonServiceProvider
 
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'statamic-locks');
+
+        $this
+            ->bootNav()
+            ->bootObservers()
+            ->bootPermissions()
+            ->bootScheduledTasks();
+    }
+
+    private function bootNav()
+    {
+        Nav::extend(function ($nav) {
+            $nav->content(__('Locks'))
+                ->route('statamic-locks.locks.index')
+                ->icon('lock')
+                ->can('view locks');
+        });
+
+        return $this;
+    }
+
+    private function bootObservers()
+    {
+        Models\LockModel::observe(Observers\LockObserver::class);
+
+        return $this;
+    }
+
+    private function bootPermissions()
+    {
+        Permission::group('locks', __('Locks'), function () {
+            Permission::register('view locks', function ($permission) {
+                $permission
+                    ->label(__('View Locks'));
+            });
+        });
+
+        return $this;
+    }
+
+    private function bootScheduledTasks()
+    {
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule) {
             $schedule->command('statamic-locks:clear-locks')->everyMinute();
         });
 
-        Models\LockModel::observe(Observers\LockObserver::class);
+        return $this;
     }
 }
