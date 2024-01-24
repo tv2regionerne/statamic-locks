@@ -50,7 +50,7 @@ class LocksController extends CpController
         ]);
     }
 
-    public function create(Request $request)
+    public function store(Request $request)
     {
         $itemId = $request->input('item_id');
         $itemType = $request->input('item_type');
@@ -61,8 +61,8 @@ class LocksController extends CpController
                 return [
                     'error' => true,
                     'message' => 'already_locked',
-                    'locked_by' => $lock->user(),
-                    'last_updated' => $lock->updated_at,
+                    'locked_by' => ['name' => $lock->user()->name(), 'email' => $lock->user()->email()],
+                    'last_updated' => $lock->updated_at->format('Y-m-d H:i:s'),
                 ];
             }
 
