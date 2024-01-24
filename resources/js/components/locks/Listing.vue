@@ -3,6 +3,9 @@
         <div class="card overflow-hidden p-0 relative" slot-scope="{ filteredRows: rows }">
 
             <data-list-table>
+                <template slot="cell-title" slot-scope="{ row: lock }">
+                    <a :href="lock.show_url">{{ lock.title }}</a>
+                </template>
                 <template slot="actions" slot-scope="{ row: lock, index }">
                     <dropdown-list>
                         <dropdown-item

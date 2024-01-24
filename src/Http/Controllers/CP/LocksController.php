@@ -15,8 +15,7 @@ class LocksController extends CpController
         $this->authorize('view locks');
 
         $columns = [
-            Column::make('item_id')->label(__('ID')),
-            Column::make('item_type')->label(__('Type')),
+            Column::make('title')->label(__('Item')),
             Column::make('user')->label(__('User')),
             Column::make('updated_at')->label(__('Last Updated')),
         ];
@@ -27,6 +26,8 @@ class LocksController extends CpController
                     'id' => $lock->getKey(),
                     'item_id' => $lock->item_id,
                     'item_type' => $lock->item_type,
+                    'title' => $lock->item()?->title ?? $lock->item_id,
+                    'show_url' => $lock->item()?->editUrl(),
                     'user' => $lock->user()->name(),
                     'updated_at' => $lock->updated_at->format('Y-m-d H:i:s'),
                     'delete_url' => cp_route('statamic-locks.locks.destroy', [$lock->getKey()])
