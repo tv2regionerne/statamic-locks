@@ -8,7 +8,7 @@ Statamic.booting(() => {
 
 Statamic.booted(() => {
     let urlPath = ('/' + Statamic.$config.get('urlPath')).split('/');
-    let locks = Statamic.$config.get('statamicLocks') ?? {};
+    let locks = Statamic.$config.get('statamicLocks.locks') ?? {};
 
     for (let handle in locks) {
         let path = locks[handle].split('/');
