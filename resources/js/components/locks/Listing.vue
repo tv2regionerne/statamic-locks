@@ -7,7 +7,7 @@
                     <a :href="lock.show_url">{{ lock.title }}</a>
                 </template>
                 <template slot="actions" slot-scope="{ row: lock, index }">
-                    <dropdown-list>
+                    <dropdown-list v-if="lock.can_delete">
                         <dropdown-item
                             :text="__('Delete')"
                             class="warning"

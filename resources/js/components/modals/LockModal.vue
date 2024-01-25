@@ -15,7 +15,11 @@
                 <button class="btn"
                     @click="back"
                     v-text="__('Back')" />
-                <button class="btn ml-4 btn-primary"
+                <button class="btn btn-danger"
+                    @click="deleteLock"
+                    v-text="__('Delete lock')"
+                    v-if="this.can('delete user locks')" />
+                <button class="btn btn-primary"
                     @click="locks"
                     v-text="__('Show locks')"
                     v-if="this.can('view locks')" />
@@ -60,6 +64,16 @@ export default {
             window.history.back();
         },
 
+        deleteLock() {
+            if (! this.status.lock_id) {
+                this.$toast.error(__('This isnt possible'));
+            }
+
+            this.$axios.delete(cp_url('statamic-locks/locks/' + this.status.lock_id)).then(response => {
+                window.location.reload();
+            }).catch(e => this.handleAxiosError(e));
+        },
+
         checkLockStatus() {
             this.$axios.post(cp_url('statamic-locks/locks'), {
                 item_id: this.itemId,
@@ -81,7 +95,7 @@ export default {
         },
 
         locks() {
-            window.location.href = cp_route('statamic-locks.locks');
+            window.location.href = cp_url('statamic-locks/locks');
         }
 
     }

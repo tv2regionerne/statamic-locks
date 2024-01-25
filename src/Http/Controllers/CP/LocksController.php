@@ -21,9 +21,11 @@ class LocksController extends CpController
             Column::make('updated_at')->label(__('Last Updated')),
         ];
 
+        $user = User::current();
+
         $locks = LockModel::where('site', Site::current()->handle())
             ->get()
-            ->map(function ($lock) {
+            ->map(function ($lock) use ($user) {
                 return [
                     'id' => $lock->getKey(),
                     'item_id' => $lock->item_id,
@@ -32,6 +34,7 @@ class LocksController extends CpController
                     'show_url' => $lock->item()?->editUrl(),
                     'user' => $lock->user()->name(),
                     'updated_at' => $lock->updated_at->format('Y-m-d H:i:s'),
+                    'can_delete' => $user->can('delete user locks') || $lock->user()->id() == $user->id(),
                     'delete_url' => cp_route('statamic-locks.locks.destroy', [$lock->getKey()])
                 ];
             })
@@ -63,6 +66,7 @@ class LocksController extends CpController
             if ($lock->user()->id() != $user->id()) {
                 return [
                     'error' => true,
+                    'lock_id' => $lock->getKey(),
                     'message' => 'already_locked',
                     'locked_by' => ['name' => $lock->user()->name(), 'email' => $lock->user()->email()],
                     'last_updated' => $lock->updated_at->format('Y-m-d H:i:s'),
