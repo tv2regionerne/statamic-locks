@@ -3,13 +3,15 @@
 namespace Tv2regionerne\StatamicLocks\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Statamic\Facades;
+use Illuminate\Support\Arr;
+use Statamic\Facades\User;
 
 class LockModel extends Model
 {
     protected $fillable = [
         'item_id',
         'item_type',
+        'site',
         'user_id',
     ];
 
@@ -24,16 +26,11 @@ class LockModel extends Model
 
     public function item()
     {
-        if ($this->item_type == 'entry') {
-            return Facades\Entry::find($this->item_id);
-        }
-
-        if ($this->item_type == 'term') {
-            return Facades\Term::find($this->item_id);
-        }
-
-        if ($this->item_type == 'asset') {
-            return Facades\Asset::find($this->item_id);
+        if ($lock = Arr::get(config('statamic-locks.locks', []), $this->item_type)) {
+            if ($handler = Arr::get($lock, 'handler')) {
+                $method = Arr::get($lock, 'method', 'find');
+                return $handler::$method($this->item_id);
+            }
         }
 
         return null;
@@ -41,6 +38,6 @@ class LockModel extends Model
 
     public function user()
     {
-        return Facades\User::find($this->user_id);
+        return User::find($this->user_id);
     }
 }

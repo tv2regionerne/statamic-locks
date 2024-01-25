@@ -4,6 +4,7 @@ namespace Tv2regionerne\StatamicLocks\Http\Controllers\CP;
 
 use Illuminate\Http\Request;
 use Statamic\CP\Column;
+use Statamic\Facades\Site;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
 use Tv2regionerne\StatamicLocks\Models\LockModel;
@@ -20,7 +21,8 @@ class LocksController extends CpController
             Column::make('updated_at')->label(__('Last Updated')),
         ];
 
-        $locks = LockModel::all()
+        $locks = LockModel::where('site', Site::current()->handle())
+            ->get()
             ->map(function ($lock) {
                 return [
                     'id' => $lock->getKey(),
@@ -57,7 +59,7 @@ class LocksController extends CpController
         $itemType = $request->input('item_type');
         $user = User::current();
 
-        if ($lock = LockModel::where(['item_id' => $itemId, 'item_type' => $itemType])->first()) {
+        if ($lock = LockModel::where(['item_id' => $itemId, 'item_type' => $itemType, 'site' => Site::current()->handle()])->first()) {
             if ($lock->user()->id() != $user->id()) {
                 return [
                     'error' => true,
@@ -78,6 +80,7 @@ class LocksController extends CpController
             'item_id' => $itemId,
             'item_type' => $itemType,
             'user_id' => $user->id(),
+            'site' => Site::current()->handle(),
         ]);
 
         return [

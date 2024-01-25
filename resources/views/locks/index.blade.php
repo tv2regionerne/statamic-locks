@@ -11,6 +11,4 @@
         :initial-columns="{{ json_encode($initialColumns) }}"
     ></statamic-locks-listing>
 
-    <statamic-locks-modal item-id="test" item-type="entry"></statamic-locks-modal>
-
 @endsection

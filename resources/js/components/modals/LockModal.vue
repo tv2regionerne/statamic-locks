@@ -38,6 +38,7 @@ export default {
     },
 
     mounted() {
+        this.checkLockStatus();
         setInterval(() => {
             this.checkLockStatus();
         }, 30000);

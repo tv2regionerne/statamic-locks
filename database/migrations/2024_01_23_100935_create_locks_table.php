@@ -16,6 +16,7 @@ return new class extends Migration
             $table->uuid('item_id');
             $table->string('item_type');
             $table->string('user_id');
+            $table->string('site');
             $table->timestamps();
         });
     }

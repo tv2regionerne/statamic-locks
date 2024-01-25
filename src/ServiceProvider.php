@@ -7,6 +7,8 @@ use Statamic\Events;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
+use Statamic\Statamic;
+use Statamic\Support\Str;
 
 class ServiceProvider extends AddonServiceProvider
 {
@@ -34,6 +36,10 @@ class ServiceProvider extends AddonServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'statamic-locks');
+
+        Statamic::provideToScript([
+            'statamicLocks' => collect(config('statamic-locks.locks'))->map(fn ($lock) => Str::ensureLeft($lock['cp_url'], '/'))->all(),
+        ]);
 
         $this
             ->bootNav()
