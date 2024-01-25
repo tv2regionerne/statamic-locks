@@ -10,6 +10,16 @@
             <div class="p-6">
                 <p class="text-base">{{ __('Locked by :name, last updated :since', {name: status.locked_by.name, since: status.last_updated}) }}
             </div>
+
+            <div class="p-4 bg-gray-200 border-t flex items-center justify-between text-sm">
+                <button class="btn"
+                    @click="back"
+                    v-text="__('Back')" />
+                <button class="btn ml-4 btn-primary"
+                    @click="locks"
+                    v-text="__('Show locks')"
+                    v-if="this.can('view locks')" />
+            </div>
         </modal>
 
     </div>
@@ -46,6 +56,10 @@ export default {
 
     methods: {
 
+        back() {
+            window.history.back();
+        },
+
         checkLockStatus() {
             this.$axios.post(cp_url('statamic-locks/locks'), {
                 item_id: this.itemId,
@@ -65,6 +79,10 @@ export default {
         handleAxiosError(e) {
             this.$toast.error(__('Error getting lock status'));
         },
+
+        locks() {
+            window.location.href = cp_route('statamic-locks.locks');
+        }
 
     }
 
