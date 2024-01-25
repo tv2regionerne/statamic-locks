@@ -7,6 +7,7 @@ use Statamic\CP\Column;
 use Statamic\Facades\Site;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
+use Tv2regionerne\StatamicLocks\Jobs\DeleteLockJob;
 use Tv2regionerne\StatamicLocks\Models\LockModel;
 
 class LocksController extends CpController
@@ -74,25 +75,26 @@ class LocksController extends CpController
             }
 
             $lock->touch();
-
-            return [
-                'error' => false,
-            ];
         }
 
-        LockModel::create([
-            'item_id' => $itemId,
-            'item_type' => $itemType,
-            'user_id' => $user->id(),
-            'site' => Site::current()->handle(),
-        ]);
+        if (! $lock) {
+            $lock = LockModel::create([
+                'item_id' => $itemId,
+                'item_type' => $itemType,
+                'user_id' => $user->id(),
+                'site' => Site::current()->handle(),
+            ]);
+        }
 
         return [
             'error' => false,
+            'status' => [
+                'lock_id' => $lock->getKey(),
+            ],
         ];
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $lock = LockModel::find($id);
 
@@ -104,6 +106,11 @@ class LocksController extends CpController
             $this->authorize('delete user locks');
         }
 
-        $lock->delete();
+        if ($request->input('delay')) {
+            DeleteLockJob::dispatch($lock)->delay(now()->addSeconds(5));
+            return;
+        }
+
+        DeleteLockJob::dispatchSync($lock);
     }
 }

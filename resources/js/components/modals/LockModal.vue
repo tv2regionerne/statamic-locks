@@ -56,6 +56,14 @@ export default {
         setInterval(() => {
             this.checkLockStatus();
         }, 30000);
+
+        window.addEventListener('beforeunload', () => {
+            if (! this.show) {
+                this.$axios.delete(cp_url('statamic-locks/locks/' + this.status.lock_id + '?delay=true'))
+                    .then(response => { })
+                    .catch(e => this.handleAxiosError(e));
+            }
+        });
     },
 
     methods: {
@@ -81,12 +89,12 @@ export default {
             }).then(response => {
                 if (response.data.error) {
                     this.show = true;
-                    this.status = response.data;
+                    this.status = response.data.status;
                     return;
                 }
 
                 this.show = false;
-                this.status = [];
+                this.status = response.data.status;
             }).catch(e => this.handleAxiosError(e));
         },
 
