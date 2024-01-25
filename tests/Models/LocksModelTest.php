@@ -12,6 +12,7 @@ test('fires a deleting event', function () {
     $model = LockModel::create([
         'item_id' => 'test',
         'item_type' => 'test',
+        'site' => 'default',
         'user_id' => 1,
     ]);
 
