@@ -90,8 +90,16 @@ class LocksController extends CpController
 
     public function destroy($id)
     {
-        $this->authorize('view locks');
+        $lock = LockModel::find($id);
 
-        LockModel::find($id)?->delete();
+        if (! $lock) {
+            return;
+        }
+
+        if (! $lock->user()->id() == User::current()->id()) {
+            $this->authorize('delete user locks');
+        }
+
+        $lock->delete();
     }
 }

@@ -74,6 +74,11 @@ class ServiceProvider extends AddonServiceProvider
                 $permission
                     ->label(__('View Locks'));
             });
+
+            Permission::register('delete user locks', function ($permission) {
+                $permission
+                    ->label(__('Delete Other User\'s Locks'));
+            });
         });
 
         return $this;
