@@ -10,6 +10,20 @@
             <div class="p-6">
                 <p class="text-base">{{ __('Locked by :name, last updated :since', {name: status.locked_by.name, since: status.last_updated}) }}
             </div>
+
+            <div class="p-4 bg-gray-200 border-t flex items-center justify-between text-sm">
+                <button class="btn"
+                    @click="back"
+                    v-text="__('Back')" />
+                <button class="btn btn-danger"
+                    @click="deleteLock"
+                    v-text="__('Delete lock')"
+                    v-if="this.can('delete user locks')" />
+                <button class="btn btn-primary"
+                    @click="locks"
+                    v-text="__('Show locks')"
+                    v-if="this.can('view locks')" />
+            </div>
         </modal>
 
     </div>
@@ -42,9 +56,31 @@ export default {
         setInterval(() => {
             this.checkLockStatus();
         }, 1000 * Statamic.$config.get('statamicLocks.pollInterval', 30));
+
+        window.addEventListener('beforeunload', () => {
+            if (! this.show) {
+                this.$axios.delete(cp_url('statamic-locks/locks/' + this.status.lock_id + '?delay=true'))
+                    .then(response => { })
+                    .catch(e => this.handleAxiosError(e));
+            }
+        });
     },
 
     methods: {
+
+        back() {
+            window.history.back();
+        },
+
+        deleteLock() {
+            if (! this.status.lock_id) {
+                this.$toast.error(__('This isnt possible'));
+            }
+
+            this.$axios.delete(cp_url('statamic-locks/locks/' + this.status.lock_id)).then(response => {
+                window.location.reload();
+            }).catch(e => this.handleAxiosError(e));
+        },
 
         checkLockStatus() {
             this.$axios.post(cp_url('statamic-locks/locks'), {
@@ -53,18 +89,22 @@ export default {
             }).then(response => {
                 if (response.data.error) {
                     this.show = true;
-                    this.status = response.data;
+                    this.status = response.data.status;
                     return;
                 }
 
                 this.show = false;
-                this.status = [];
+                this.status = response.data.status;
             }).catch(e => this.handleAxiosError(e));
         },
 
         handleAxiosError(e) {
             this.$toast.error(__('Error getting lock status'));
         },
+
+        locks() {
+            window.location.href = cp_url('statamic-locks/locks');
+        }
 
     }
 

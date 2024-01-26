@@ -8,6 +8,7 @@ use Statamic\CP\Column;
 use Statamic\Facades\Site;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
+use Tv2regionerne\StatamicLocks\Jobs\DeleteLockJob;
 use Tv2regionerne\StatamicLocks\Models\LockModel;
 
 class LocksController extends CpController
@@ -22,9 +23,11 @@ class LocksController extends CpController
             Column::make('updated_at')->label(__('Last Updated')),
         ];
 
+        $user = User::current();
+
         $locks = LockModel::where('site', Site::current()->handle())
             ->get()
-            ->map(function ($lock) {
+            ->map(function ($lock) use ($user) {
                 return [
                     'id' => $lock->getKey(),
                     'item_id' => $lock->item_id,
@@ -33,6 +36,7 @@ class LocksController extends CpController
                     'show_url' => $lock->item()?->editUrl(),
                     'user' => $lock->user()->name(),
                     'updated_at' => $lock->updated_at->format('Y-m-d H:i:s'),
+                    'can_delete' => $user->can('delete user locks') || $lock->user()->id() == $user->id(),
                     'delete_url' => cp_route('statamic-locks.locks.destroy', [$lock->getKey()])
                 ];
             })
@@ -70,6 +74,7 @@ class LocksController extends CpController
             if ($lock->user()->id() != $user->id()) {
                 return [
                     'error' => true,
+                    'lock_id' => $lock->getKey(),
                     'message' => 'already_locked',
                     'locked_by' => ['name' => $lock->user()->name(), 'email' => $lock->user()->email()],
                     'last_updated' => $lock->updated_at->format('Y-m-d H:i:s'),
@@ -77,27 +82,28 @@ class LocksController extends CpController
             }
 
             $lock->touch();
-
-            return [
-                'error' => false,
-            ];
         }
 
-        LockModel::create([
-            'item_id' => $itemId,
-            'item_type' => $itemType,
-            'user_id' => $user->id(),
-            'site' => Site::current()->handle(),
-        ]);
+        if (! $lock) {
+            $lock = LockModel::create([
+                'item_id' => $itemId,
+                'item_type' => $itemType,
+                'user_id' => $user->id(),
+                'site' => Site::current()->handle(),
+            ]);
+        }
 
         return [
             'error' => false,
+            'status' => [
+                'lock_id' => $lock->getKey(),
+            ],
         ];
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        $this->authorize('view locks');
+        $lock = LockModel::find($id);
 
         if (! $lock) {
             return;
