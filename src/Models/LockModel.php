@@ -13,6 +13,7 @@ class LockModel extends Model
         'item_type',
         'site',
         'user_id',
+        'updated_at',
     ];
 
     protected $casts = [];
