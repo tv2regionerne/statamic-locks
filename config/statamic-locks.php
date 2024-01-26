@@ -21,4 +21,6 @@ return [
             'cp_url' => '/taxonomies/*/terms/{id}'
         ],
     ],
+
+    'poll_interval' => 30, // seconds
 ];

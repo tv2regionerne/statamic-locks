@@ -38,7 +38,10 @@ class ServiceProvider extends AddonServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'statamic-locks');
 
         Statamic::provideToScript([
-            'statamicLocks' => collect(config('statamic-locks.locks'))->map(fn ($lock) => Str::ensureLeft($lock['cp_url'], '/'))->all(),
+            'statamicLocks' => [
+                'locks' => collect(config('statamic-locks.locks'))->map(fn ($lock) => Str::ensureLeft($lock['cp_url'], '/'))->all(),
+                'pollInterval' => config('statamic-locks.locks.poll_interval', 30),
+            ],
         ]);
 
         $this

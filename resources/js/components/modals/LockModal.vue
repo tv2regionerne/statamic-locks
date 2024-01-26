@@ -55,7 +55,7 @@ export default {
         this.checkLockStatus();
         setInterval(() => {
             this.checkLockStatus();
-        }, 30000);
+        }, 1000 * Statamic.$config.get('statamicLocks.pollInterval', 30));
 
         window.addEventListener('beforeunload', () => {
             if (! this.show) {

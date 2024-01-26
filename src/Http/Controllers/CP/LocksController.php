@@ -3,6 +3,7 @@
 namespace Tv2regionerne\StatamicLocks\Http\Controllers\CP;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Statamic\CP\Column;
 use Statamic\Facades\Site;
 use Statamic\Facades\User;
@@ -63,7 +64,13 @@ class LocksController extends CpController
         $itemType = $request->input('item_type');
         $user = User::current();
 
-        if ($lock = LockModel::where(['item_id' => $itemId, 'item_type' => $itemType, 'site' => Site::current()->handle()])->first()) {
+        $lock = LockModel::where('item_id', $itemId)
+            ->where('item_type', $itemType)
+            ->where('site', Site::current()->handle())
+            ->where('updated_at', '>', Carbon::now()->subSeconds(config('statamic-locks.clear_locks_after', 5) * 60))
+            ->first();
+
+        if ($lock) {
             if ($lock->user()->id() != $user->id()) {
                 return [
                     'error' => true,
@@ -107,10 +114,12 @@ class LocksController extends CpController
         }
 
         if ($request->input('delay')) {
-            DeleteLockJob::dispatch($lock)->delay(now()->addSeconds(5));
+            $lock->updated_at = Carbon::now()->subSeconds((config('statamic-locks.clear_locks_after', 5) * 60) - 5);
+            $lock->save();
+
             return;
         }
 
-        DeleteLockJob::dispatchSync($lock);
+        $lock->delete();
     }
 }
