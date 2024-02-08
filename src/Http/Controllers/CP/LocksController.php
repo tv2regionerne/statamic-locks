@@ -36,7 +36,7 @@ class LocksController extends CpController
                     'show_url' => $lock->item()?->editUrl(),
                     'user' => $lock->user()?->name() ?? __('Unknown user'),
                     'updated_at' => $lock->updated_at->format('Y-m-d H:i:s'),
-                    'can_delete' => $user->can('delete user locks') || $lock->user()->id() == $user->id(),
+                    'can_delete' => $user->can('delete user locks') || $lock->user()?->id() == $user->id(),
                     'delete_url' => cp_route('statamic-locks.locks.destroy', [$lock->getKey()])
                 ];
             })
@@ -70,7 +70,7 @@ class LocksController extends CpController
             ->first();
 
         if ($lock) {
-            if ($lock->user()->id() != $user->id()) {
+            if ($lock->user()?->id() != $user->id()) {
                 if ($lock->updated_at->gt(Carbon::now()->subSeconds(config('statamic-locks.clear_locks_after', 5) * 60))) {
                     // expired
                     $lock->delete();
@@ -113,7 +113,7 @@ class LocksController extends CpController
             return;
         }
 
-        if (! $lock->user()->id() == User::current()->id()) {
+        if (! $lock->user()?->id() == User::current()->id()) {
             $this->authorize('delete user locks');
         }
 
