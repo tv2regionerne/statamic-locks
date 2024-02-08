@@ -9,9 +9,13 @@ use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
 use Statamic\Statamic;
 use Statamic\Support\Str;
+use Tv2regionerne\StatamicLocks\Console\ClearLocks;
 
 class ServiceProvider extends AddonServiceProvider
 {
+    protected $commands = [
+        ClearLocks::class,
+    ];
     protected $listen = [
         Events\AssetSaving::class => [Listeners\LockListener::class],
         Events\EntrySaving::class => [Listeners\LockListener::class],
