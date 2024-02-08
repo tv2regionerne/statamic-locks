@@ -73,6 +73,7 @@ class LocksController extends CpController
                 if ($lock->updated_at->lt(Carbon::now()->addSeconds(config('statamic-locks.clear_locks_after', 5) * 60))) {
                     // expired
                     $lock->delete();
+                    $lock = null;
                 } else {
                     return [
                         'error' => true,
