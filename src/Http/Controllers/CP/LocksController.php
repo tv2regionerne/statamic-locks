@@ -71,7 +71,7 @@ class LocksController extends CpController
 
         if ($lock) {
             if ($lock->user()?->id() != $user->id()) {
-                if ($lock->updated_at->gt(Carbon::now()->subSeconds(config('statamic-locks.clear_locks_after', 5) * 60))) {
+                if ($lock->updated_at->lt(Carbon::now()->addSeconds(config('statamic-locks.clear_locks_after', 5) * 60))) {
                     // expired
                     $lock->delete();
                 } else {
