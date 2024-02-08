@@ -10,15 +10,15 @@ return [
     'locks' => [
         'entry' => [
             'handler' => '\Statamic\Facades\Entry',
-            'cp_url' => '/collections/*/entries/{id}'
+            'cp_url' => '/collections/*/entries/{id}',
         ],
         'global' => [
             'handler' => '\Statamic\Facades\GlobalSet',
-            'cp_url' => '/globals/{id}'
+            'cp_url' => '/globals/{id}',
         ],
         'term' => [
             'handler' => '\Statamic\Facades\Term',
-            'cp_url' => '/taxonomies/*/terms/{id}'
+            'cp_url' => '/taxonomies/*/terms/{id}',
         ],
     ],
 

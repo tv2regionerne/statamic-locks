@@ -85,7 +85,7 @@ abstract class TestCase extends OrchestraTestCase
         foreach ($configs as $config) {
             $app['config']->set(
                 "statamic.$config",
-                require(__DIR__."/../vendor/statamic/cms/config/{$config}.php")
+                require (__DIR__."/../vendor/statamic/cms/config/{$config}.php")
             );
         }
 
@@ -96,7 +96,7 @@ abstract class TestCase extends OrchestraTestCase
             'directory' => __DIR__.'/__fixtures__/users',
         ]);
 
-        $app['config']->set('statamic-locks', require(__DIR__.'/../config/statamic-locks.php'));
+        $app['config']->set('statamic-locks', require (__DIR__.'/../config/statamic-locks.php'));
 
         $app['config']->set('app.debug', true);
     }

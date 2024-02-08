@@ -25,7 +25,6 @@ class DeleteLockJob implements ShouldQueue
         $this->lock = $lock;
     }
 
-
     /**
      * Execute the job.
      *
@@ -35,5 +34,4 @@ class DeleteLockJob implements ShouldQueue
     {
         $this->lock?->delete();
     }
-
 }

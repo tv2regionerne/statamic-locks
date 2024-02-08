@@ -30,6 +30,7 @@ class LockModel extends Model
         if ($lock = Arr::get(config('statamic-locks.locks', []), $this->item_type)) {
             if ($handler = Arr::get($lock, 'handler')) {
                 $method = Arr::get($lock, 'method', 'find');
+
                 return $handler::$method($this->item_id);
             }
         }

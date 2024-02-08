@@ -8,7 +8,6 @@ use Statamic\CP\Column;
 use Statamic\Facades\Site;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
-use Tv2regionerne\StatamicLocks\Jobs\DeleteLockJob;
 use Tv2regionerne\StatamicLocks\Models\LockModel;
 
 class LocksController extends CpController
@@ -37,7 +36,7 @@ class LocksController extends CpController
                     'user' => $lock->user()?->name() ?? __('Unknown user'),
                     'updated_at' => $lock->updated_at->format('Y-m-d H:i:s'),
                     'can_delete' => $user->can('delete user locks') || $lock->user()?->id() == $user->id(),
-                    'delete_url' => cp_route('statamic-locks.locks.destroy', [$lock->getKey()])
+                    'delete_url' => cp_route('statamic-locks.locks.destroy', [$lock->getKey()]),
                 ];
             })
             ->values();

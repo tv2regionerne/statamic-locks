@@ -2,8 +2,6 @@
 
 uses(\Tv2regionerne\StatamicLocks\Tests\TestCase::class);
 
-use Illuminate\Support\Facades\Event;
-use Statamic\Events;
 use Statamic\Facades;
 use Tv2regionerne\StatamicLocks\Models\LockModel;
 
@@ -25,4 +23,4 @@ it('prevents saving when there is a lock', function () {
     ]);
 
     $entry->save();
-})->throws(Exception::class);;
+})->throws(Exception::class);

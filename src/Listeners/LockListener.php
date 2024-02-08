@@ -39,7 +39,7 @@ class LockListener
         if ($lock = LockModel::where(['item_id' => $itemId, 'item_type' => $itemType, 'site' => Site::current()->handle()])->first()) {
             if (! $lock->user() || ! $user || $lock->user()->id() != $user->id()) {
                 throw ValidationException::withMessages([
-                    'locked' => __('This item is locked')
+                    'locked' => __('This item is locked'),
                 ]);
             }
         }
