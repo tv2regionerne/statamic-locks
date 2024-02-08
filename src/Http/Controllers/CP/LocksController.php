@@ -34,7 +34,7 @@ class LocksController extends CpController
                     'item_type' => $lock->item_type,
                     'title' => $lock->item()?->title ?? $lock->item_id,
                     'show_url' => $lock->item()?->editUrl(),
-                    'user' => $lock->user()->name(),
+                    'user' => $lock->user()?->name() ?? __('Unknown user'),
                     'updated_at' => $lock->updated_at->format('Y-m-d H:i:s'),
                     'can_delete' => $user->can('delete user locks') || $lock->user()->id() == $user->id(),
                     'delete_url' => cp_route('statamic-locks.locks.destroy', [$lock->getKey()])
@@ -79,7 +79,7 @@ class LocksController extends CpController
                         'error' => true,
                         'lock_id' => $lock->getKey(),
                         'message' => 'already_locked',
-                        'locked_by' => ['name' => $lock->user()->name(), 'email' => $lock->user()->email()],
+                        'locked_by' => ['name' => $lock->user()?->name() ?? __('Unknown user'), 'email' => $lock->user()?->email() ?? ''],
                         'last_updated' => $lock->updated_at->format('Y-m-d H:i:s'),
                     ];
                 }
