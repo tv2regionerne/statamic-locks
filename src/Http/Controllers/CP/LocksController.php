@@ -99,9 +99,7 @@ class LocksController extends CpController
 
         return [
             'error' => false,
-            'status' => [
-                'lock_id' => $lock->getKey(),
-            ],
+            'lock_id' => $lock->getKey(),
         ];
     }
 
