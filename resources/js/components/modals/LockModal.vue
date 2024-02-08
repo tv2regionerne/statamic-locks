@@ -89,12 +89,12 @@ export default {
             }).then(response => {
                 if (response.data.error) {
                     this.show = true;
-                    this.status = response.data.status;
+                    this.status = response.data;
                     return;
                 }
 
                 this.show = false;
-                this.status = response.data.status;
+                this.status = response.data;
             }).catch(e => this.handleAxiosError(e));
         },
 
