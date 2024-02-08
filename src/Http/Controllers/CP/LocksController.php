@@ -67,21 +67,25 @@ class LocksController extends CpController
         $lock = LockModel::where('item_id', $itemId)
             ->where('item_type', $itemType)
             ->where('site', Site::current()->handle())
-            ->where('updated_at', '>', Carbon::now()->subSeconds(config('statamic-locks.clear_locks_after', 5) * 60))
             ->first();
 
         if ($lock) {
             if ($lock->user()->id() != $user->id()) {
-                return [
-                    'error' => true,
-                    'lock_id' => $lock->getKey(),
-                    'message' => 'already_locked',
-                    'locked_by' => ['name' => $lock->user()->name(), 'email' => $lock->user()->email()],
-                    'last_updated' => $lock->updated_at->format('Y-m-d H:i:s'),
-                ];
+                if ($lock->updated_at->gt(Carbon::now()->subSeconds(config('statamic-locks.clear_locks_after', 5) * 60))) {
+                    // expired
+                    $lock->delete();
+                } else {
+                    return [
+                        'error' => true,
+                        'lock_id' => $lock->getKey(),
+                        'message' => 'already_locked',
+                        'locked_by' => ['name' => $lock->user()->name(), 'email' => $lock->user()->email()],
+                        'last_updated' => $lock->updated_at->format('Y-m-d H:i:s'),
+                    ];
+                }
+            } else {
+                $lock->touch();
             }
-
-            $lock->touch();
         }
 
         if (! $lock) {
