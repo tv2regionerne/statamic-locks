@@ -39,7 +39,7 @@ Statamic.booted(() => {
 
         if (valid && id && ! path.length) {
             Statamic.$components.append('statamic-locks-modal', {
-                props: { itemType: handle, itemId: id }
+                props: { itemType: handle, itemId: id.split('?').shift() }
             });
         }
     }
