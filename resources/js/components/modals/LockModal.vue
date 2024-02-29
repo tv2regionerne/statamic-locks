@@ -83,19 +83,21 @@ export default {
         },
 
         checkLockStatus() {
-            this.$axios.post(cp_url('statamic-locks/locks'), {
-                item_id: this.itemId,
-                item_type: this.itemType,
-            }).then(response => {
-                if (response.data.error) {
-                    this.show = true;
-                    this.status = response.data;
-                    return;
-                }
+            this.updateCsrfToken().then(() => {
+                this.$axios.post(cp_url('statamic-locks/locks'), {
+                    item_id: this.itemId,
+                    item_type: this.itemType,
+                }).then(response => {
+                    if (response.data.error) {
+                        this.show = true;
+                        this.status = response.data;
+                        return;
+                    }
 
-                this.show = false;
-                this.status = response.data;
-            }).catch(e => this.handleAxiosError(e));
+                    this.show = false;
+                    this.status = response.data;
+                }).catch(e => this.handleAxiosError(e));
+            });
         },
 
         handleAxiosError(e) {
@@ -104,8 +106,15 @@ export default {
 
         locks() {
             window.location.href = cp_url('statamic-locks/locks');
-        }
+        },
 
+        updateCsrfToken() {
+            return this.$axios.get(cp_url('auth/token')).then(response => {
+                const csrf = response.data;
+                this.$axios.defaults.headers.common['X-CSRF-TOKEN'] = csrf;
+                this.$config.set('csrfToken', csrf);
+            });
+        },
     }
 
 }
