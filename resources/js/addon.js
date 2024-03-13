@@ -38,8 +38,15 @@ Statamic.booted(() => {
         }
 
         if (valid && id && ! path.length) {
+
+            id = id.split('?').shift();
+
+            if (id == 'create') {
+                continue;
+            }
+
             Statamic.$components.append('statamic-locks-modal', {
-                props: { itemType: handle, itemId: id.split('?').shift() }
+                props: { itemType: handle, itemId: id }
             });
         }
     }
