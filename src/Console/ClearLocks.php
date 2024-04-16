@@ -39,6 +39,6 @@ class ClearLocks extends Command
 
         $this->info('✔️ Done');
 
-        return 1;
+        return 0;
     }
 }
