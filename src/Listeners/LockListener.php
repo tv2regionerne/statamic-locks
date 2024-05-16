@@ -24,7 +24,6 @@ class LockListener
             return;
         }
 
-
         if ($event instanceof Events\AssetSaving) {
             $itemId = $event->asset->id() ?? false;
             $itemType = 'asset';
