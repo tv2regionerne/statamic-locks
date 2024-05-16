@@ -2,6 +2,7 @@
 
 namespace Tv2regionerne\StatamicLocks\Listeners;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 use Statamic\Events;
 use Statamic\Facades\Site;
@@ -38,9 +39,11 @@ class LockListener
 
         if ($lock = LockModel::where(['item_id' => $itemId, 'item_type' => $itemType, 'site' => Site::current()->handle()])->first()) {
             if (! $lock->user() || ! $user || $lock->user()->id() != $user->id()) {
-                throw ValidationException::withMessages([
-                    'locked' => __('This item is locked'),
-                ]);
+                if ($lock->updated_at > Carbon::now()->subMinutes(config('statamic-locks.clear_locks_after', 5))) {
+                    throw ValidationException::withMessages([
+                        'locked' => __('This item is locked'),
+                    ]);
+                }
             }
         }
     }
