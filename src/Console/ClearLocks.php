@@ -32,12 +32,13 @@ class ClearLocks extends Command
         $this->info('Clearing locks...');
         $this->line('');
 
-        LockModel::where('updated_by', '<', Carbon::now()->subMinutes(config('statamic-locks.clear_locks_after', 5)))
+        LockModel::where('updated_at', '<', Carbon::now()->subMinutes(config('statamic-locks.clear_locks_after', 5)))
+            ->get()
             ->each
             ->delete();
 
         $this->info('✔️ Done');
 
-        return 1;
+        return 0;
     }
 }

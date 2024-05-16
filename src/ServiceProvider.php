@@ -12,6 +12,10 @@ use Statamic\Support\Str;
 
 class ServiceProvider extends AddonServiceProvider
 {
+    protected $commands = [
+        ClearLocks::class,
+    ];
+
     protected $listen = [
         Events\AssetSaving::class => [Listeners\LockListener::class],
         Events\EntrySaving::class => [Listeners\LockListener::class],
