@@ -19,8 +19,8 @@ class LockListener
 
         $path = request()->path();
 
-        // ignore locks on API requests
-        if (Str::of($path)->startsWith('api')) {
+        // Only apply locks in cp
+        if (!Str::of($path)->startsWith('cp')) {
             return;
         }
 
