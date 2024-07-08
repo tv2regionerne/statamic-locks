@@ -20,7 +20,7 @@ class LockListener
         $path = request()->path();
 
         // Only apply locks in cp
-        if (!Str::of($path)->startsWith('cp')) {
+        if (! Str::of($path)->startsWith('cp')) {
             return;
         }
 
