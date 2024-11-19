@@ -2,8 +2,8 @@ import LocksListing from './components/locks/Listing.vue'
 import LockModal from './components/modals/LockModal.vue'
 
 Statamic.booting(() => {
-    Statamic.component('statamic-locks-listing', LocksListing);
-    Statamic.component('statamic-locks-modal', LockModal);
+    Statamic.component('locks-listing', LocksListing);
+    Statamic.component('locks-modal', LockModal);
 });
 
 Statamic.booted(() => {
@@ -45,7 +45,7 @@ Statamic.booted(() => {
                 continue;
             }
 
-            Statamic.$components.append('statamic-locks-modal', {
+            Statamic.$components.append('locks-modal', {
                 props: { itemType: handle, itemId: id }
             });
         }

@@ -7,8 +7,8 @@
         <h1 class="flex-1">{{ __('Locks') }}</h1>
     </div>
 
-    <statamic-locks-listing
+    <locks-listing
         :initial-columns="{{ json_encode($initialColumns) }}"
-    ></statamic-locks-listing>
+    ></locks-listing>
 
 @endsection

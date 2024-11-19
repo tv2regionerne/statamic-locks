@@ -8,7 +8,7 @@
             </div>
 
             <div class="p-6">
-                <p class="text-base">{{ __('Locked by :name, last updated :since', {name: status.locked_by.name, since: status.last_updated}) }}
+                <p class="text-base">{{ __('Locked by :name, last updated :since', {name: status.locked_by.name, since: status.last_updated}) }}</p>
             </div>
 
             <div class="p-4 bg-gray-200 border-t flex items-center justify-between text-sm">
