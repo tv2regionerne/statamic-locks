@@ -2,6 +2,7 @@
 
 namespace Tv2regionerne\StatamicLocks\Tests;
 
+use Illuminate\Support\Str;
 use Statamic\Facades\Path;
 use Statamic\Facades\Stache;
 
@@ -14,7 +15,7 @@ trait PreventSavingStacheItemsToDisk
         $this->fakeStacheDirectory = Path::tidy($this->fakeStacheDirectory);
 
         Stache::stores()->each(function ($store) {
-            $relative = str_after(str_after($store->directory(), 'content'), '/');
+            $relative = Str::after(Str::after($store->directory(), 'content'), '/');
             $store->directory($this->fakeStacheDirectory.'/'.$relative);
         });
     }

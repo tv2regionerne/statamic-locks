@@ -17,10 +17,7 @@ class LockListener
         $itemId = false;
         $itemType = false;
 
-        $path = request()->path();
-
-        // Only apply locks in cp
-        if (! Str::of($path)->startsWith('cp')) {
+        if (! $this->isCpRequest()) {
             return;
         }
 
@@ -44,7 +41,6 @@ class LockListener
         }
 
         $user = User::current();
-
         if ($lock = LockModel::where(['item_id' => $itemId, 'item_type' => $itemType, 'site' => Site::current()->handle()])->first()) {
             if (! $lock->user() || ! $user || $lock->user()->id() != $user->id()) {
                 if ($lock->updated_at > Carbon::now()->subMinutes(config('statamic-locks.clear_locks_after', 5))) {
@@ -54,5 +50,12 @@ class LockListener
                 }
             }
         }
+    }
+
+    protected function isCpRequest(): bool
+    {
+        $path = request()->path();
+
+        return Str::of($path)->startsWith('cp');
     }
 }

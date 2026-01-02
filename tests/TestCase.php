@@ -76,7 +76,6 @@ abstract class TestCase extends OrchestraTestCase
             'cp',
             'forms',
             'static_caching',
-            'sites',
             'stache',
             'system',
             'users',
